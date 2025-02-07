@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulado Interativo</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+    }
+    .question {
+      margin-bottom: 20px;
+      padding: 10px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    .question h2 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .options {
+      list-style: none;
+      padding: 0;
+    }
+    .options li {
+      margin-bottom: 10px;
+    }
+    .options input {
+      margin-right: 10px;
+    }
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    .result {
+      text-align: center;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simulado Interativo</h1>
+
+  <form id="quizForm">
+    <!-- Questão da Primeira Imagem -->
+    <div class="question" id="question1">
+      <h2>1. Qual é a fórmula da energia cinética?</h2>
+      <ul class="options">
+        <li><label><input type="radio" name="q1" value="A"> (A) \( E = mc^2 \)</label></li>
+        <li><label><input type="radio" name="q1" value="B"> (B) \( E = \frac{1}{2} mv^2 \)</label></li>
+        <li><label><input type="radio" name="q1" value="C"> (C) \( F = ma \)</label></li>
+        <li><label><input type="radio" name="q1" value="D"> (D) \( V = IR \)</label></li>
+      </ul>
+    </div>
+
+    <!-- Questão da Segunda Imagem -->
+    <div class="question" id="question2">
+      <h2>2. Seja uma função \( f: A \to B \) tal que \( A = \{0, 1, 2, 3, 4\} \) e \( B = \mathbb{R} \). A alternativa que apresenta todos os pontos de um possível gráfico de \( f \) é:</h2>
+      <ul class="options">
+        <li><label><input type="radio" name="q2" value="A"> (A) \( (0, 0); (0, 1); (0, 2); (0, 3) \text{ e } (0, 4) \)</label></li>
+        <li><label><input type="radio" name="q2" value="B"> (B) \( (0, 0); (1, 0); (2, 0); (3, 0) \text{ e } (4, 0) \)</label></li>
+        <li><label><input type="radio" name="q2" value="C"> (C) \( (0, 0); (1, −1); (2, −2) \text{ e } (3, −3) \)</label></li>
+        <li><label><input type="radio" name="q2" value="D"> (D) \( (0, 1); (2, 3); (4, 5) \text{ e } (5, 6) \)</label></li>
+      </ul>
+    </div>
+
+    <button type="submit" id="submitButton" disabled>Enviar Respostas</button>
+  </form>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    const form = document.getElementById('quizForm');
+    const submitButton = document.getElementById('submitButton');
+    const resultDiv = document.getElementById('result');
+    
+    // Verifica se todas as perguntas foram respondidas
+    form.addEventListener('change', () => {
+      const allAnswered = [...form.querySelectorAll('.question')].every(q => 
+        q.querySelector('input[type="radio"]:checked')
+      );
+      submitButton.disabled = !allAnswered;
+    });
+
+    // Processa as respostas
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const correctAnswers = {
+        q1: 'B',
+        q2: 'B',
+      };
+
+      let score = 0;
+      const formData = new FormData(form);
+
+      for (const [question, answer] of formData.entries()) {
+        if (correctAnswers[question] === answer) {
+          score++;
+        }
+      }
+
+      resultDiv.textContent = `Você acertou ${score} de ${Object.keys(correctAnswers).length} perguntas!`;
+    });
+  </script>
+</body>
+</html>
