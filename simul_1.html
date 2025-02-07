@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado de Matemática e Física</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        .question { margin-bottom: 20px; }
+        .options { margin-left: 20px; }
+        .btn { padding: 10px 15px; font-size: 16px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px; }
+        .btn:hover { background-color: #45a049; }
+    </style>
+</head>
+<body>
+    <h1>Simulado Online - Matemática</h1>
+    <p>Resolva a questão abaixo:</p>
+
+    <div class="question">
+        <p><strong>(EEAr 1. 2016)</strong> Se \( f(x) = \frac{x-1}{x+1} + \frac{3x}{\sqrt{x+4}} \) é uma função, seu domínio é \( D = \{x \in \mathbb{R} \mid \text{_________}\}\).</p>
+
+        <div class="options">
+            <label><input type="radio" name="q1" value="a"> \( x > 4 \text{ e } x \neq 1 \)</label><br>
+            <label><input type="radio" name="q1" value="b"> \( x < 4 \text{ e } x \neq \pm 1 \)</label><br>
+            <label><input type="radio" name="q1" value="c"> \( x < -4 \text{ e } x \neq -1 \)</label><br>
+            <label><input type="radio" name="q1" value="d"> \( x > -4 \text{ e } x \neq -1 \)</label><br>
+        </div>
+    </div>
+
+    <button class="btn" onclick="submitAnswer()">Enviar Resposta</button>
+
+    <p id="result"></p>
+
+    <script>
+        function submitAnswer() {
+            const selected = document.querySelector('input[name="q1"]:checked');
+            const result = document.getElementById('result');
+
+            if (!selected) {
+                result.textContent = "Por favor, selecione uma alternativa.";
+                result.style.color = "red";
+                return;
+            }
+
+            if (selected.value === 'd') {
+                result.textContent = "Resposta correta! O domínio é \( x > -4 \text{ e } x \neq -1 \).";
+                result.style.color = "green";
+            } else {
+                result.textContent = "Resposta incorreta. Tente novamente!";
+                result.style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>
