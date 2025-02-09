@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulado Interativo</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+    }
+    .question {
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    .question p {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    .options label {
+      display: block;
+      margin: 5px 0;
+      font-size: 15px;
+    }
+    .options input {
+      margin-right: 10px;
+    }
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    .timer {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: red;
+      margin-bottom: 20px;
+    }
+    .result {
+      text-align: center;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+    canvas {
+      max-width: 100%;
+      margin: 20px auto;
+      display: block;
+    }
+  </style>
+  <script>
+    function doPost(e) {
+    // Abre a planilha pelo ID
+    const spreadsheet = SpreadsheetApp.openById("ID_DA_SUA_PLANILHA");
+    const sheet = spreadsheet.getActiveSheet();
+
+    // Extrai os dados enviados pelo formulário
+    const data = JSON.parse(e.postData.contents);
+
+    // Calcula o resultado (certo ou errado)
+    const resultado = data.resposta_usuario === data.resposta_correta ? "Correto" : "Errado";
+
+    // Insere os dados na planilha
+    sheet.appendRow([
+      data.usuario,
+      data.questao,
+      data.resposta_correta,
+      data.resposta_usuario,
+      resultado,
+      new Date() // Data/hora do envio
+    ]);
+
+    // Retorna uma resposta de sucesso
+    return ContentService.createTextOutput(JSON.stringify({ status: "sucesso", resultado: resultado }))
+      .setMimeType(ContentService.MimeType.JSON);
+    }
+  </script>
+  <script>
+    function enviarFormulario() {
+      // Obter os valores dos campos
+      const nome = document.getElementById("nome").value;
+      const email = document.getElementById("email").value;
+      const mensagem = document.getElementById("mensagem").value;
+
+      // Verificar se todos os campos estão preenchidos
+      if (!nome || !email || !mensagem) {
+        alert("Por favor, preencha todos os campos do formulário.");
+        return;
+      }
+
+      // Enviar os dados para o servidor (exemplo com console.log)
+      console.log("Nome:", nome);
+      console.log("Email:", email);
+      console.log("Mensagem:", mensagem);
+
+      // Resetar o formulário
+      document.getElementById("formulario").reset();
+
+      // Exibir mensagem de sucesso
+      alert("Formulário enviado com sucesso!");
+    }
+  </script>
+  <script>
+    let timeLeft = 3600; // Exemplo: 1 hora em segundos.
+
+    function updateTimer() {
+      // Calcula horas, minutos e segundos
+      const hours = Math.floor(timeLeft / 3600);
+      const minutes = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
+      const seconds = (timeLeft % 60).toString().padStart(2, '0');
+
+      // Atualiza o DOM (substitua 'timerElement' pelo ID do elemento HTML que exibe o temporizador)
+      document.getElementById('timerElement').textContent = `${hours}:${minutes}:${seconds}`;
+
+      // Decrementa o tempo restante
+      if (timeLeft > 0) {
+        timeLeft--;
+      } else {
+        clearInterval(timerInterval); // Para o temporizador quando o tempo acabar
+      }
+    }
+
+    // Chama a função a cada segundo
+    const timerInterval = setInterval(updateTimer, 1000);
+  </script>
+  <script>
+    const ctx = document.getElementById('resultChart').getContext('2d');
+    const totalQuestions = 7;
+    const score = calculateCorrectAnswers();
+
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Acertos', 'Erros'],
+        datasets: [{
+          data: [score, totalQuestions - score],
+          backgroundColor: ['#4CAF50', '#F44336']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top'
+          }
+        }
+      }
+    });
+  </script>
+</head>
+<body>
+  <h1>Simulado Interativo</h1>
+  <div id="timerElement">00:00:00</div>
+  <h1>Formulário de Contato</h1>
+  <form id="formulario" onsubmit="event.preventDefault(); enviarFormulario();">
+    <label for="nome">Nome:</label>
+    <input type="text" id="nome" name="nome" required><br><br>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required><br><br>
+
+    <label for="mensagem">Mensagem:</label><br>
+    <textarea id="mensagem" name="mensagem" rows="5" required></textarea><br><br>
+
+    <button type="submit">Enviar</button>
+  </form>
+    <!-- Questão 1 -->
+    <div class="question">
+      <p><strong>(EsSA 2012)</strong> Se \( f(2x + 1) = x^2 + 2x \), então \( f(2) \) vale:</p>
+      <div class="options">
+        <label><input type="radio" name="q1" value="A"> \( \frac{5}{4} \)</label>
+        <label><input type="radio" name="q1" value="B"> \( \frac{3}{2} \)</label>
+        <label><input type="radio" name="q1" value="C"> \( \frac{1}{2} \)</label>
+        <label><input type="radio" name="q1" value="D"> \( \frac{3}{4} \)</label>
+        <label><input type="radio" name="q1" value="E"> \( \frac{5}{2} \)</label>
+      </div>
+    </div>
+
+    <!-- Questão 2 -->
+    <div class="question">
+      <p><strong>(EsSA 2016)</strong> Sejam as funções reais dadas por \( f(x) = 5x + 1 \) e \( g(x) = 3x - 2 \). Se \( m = f(n) \), então \( g(m) \) vale:</p>
+      <div class="options">
+        <label><input type="radio" name="q2" value="A"> \( 15n + 1 \)</label>
+        <label><input type="radio" name="q2" value="B"> \( 14n - 1 \)</label>
+        <label><input type="radio" name="q2" value="C"> \( 3n - 2 \)</label>
+        <label><input type="radio" name="q2" value="D"> \( 15n - 15 \)</label>
+        <label><input type="radio" name="q2" value="E"> \( 14n - 2 \)</label>
+      </div>
+    </div>
+
+    <!-- Questão 3 -->
+    <div class="question">
+      <p><strong>(EEAr 1. 2016)</strong> Se \( f(x) = \frac{x-1}{x+1} + \frac{3x}{\sqrt{x+4}} \) é uma função, seu domínio é \( D = \{x \in \mathbb{R} \mid \text{_________}\}\).</p>
+      <div class="options">
+        <label><input type="radio" name="q3" value="A"> \( x > 4 \text{ e } x \neq 1 \)</label>
+        <label><input type="radio" name="q3" value="B"> \( x < 4 \text{ e } x \neq \pm 1 \)</label>
+        <label><input type="radio" name="q3" value="C"> \( x < -4 \text{ e } x \neq -1 \)</label>
+        <label><input type="radio" name="q3" value="D"> \( x > -4 \text{ e } x \neq -1 \)</label>
+      </div>
+    </div>
+    
+    <!-- Questão 4 -->
+    <div class="question">
+      <p><strong>(EEAr)</strong> (EEAr) A quantidade de números inteiros positivos que verificam as inequações \( 3x-8 < x \text{ e } x+20 > 10x \), ao mesmo tempo é:</p>
+      <div class="options">
+        <label><input type="radio" name="q4" value="A"> \( 1 \)</label>
+        <label><input type="radio" name="q4" value="B"> \( 2 \)</label>
+        <label><input type="radio" name="q4" value="C"> \( 3 \)</label>
+        <label><input type="radio" name="q4" value="D"> \( 4 \)</label>
+      </div>
+
+    <!-- Questão 5 -->
+    <div class="question">
+      <p><strong>(EEAr)</strong> A solução da inequação \(2(x + 2) + 5x \leq 4(x + 3)\) é um intervalo real. Pode-se afirmar que pertence a esse intervalo o número:</p>
+      <div class="options">
+        <label><input type="radio" name="q5" value="A"> \( 2 \)</label>
+        <label><input type="radio" name="q5" value="B"> \( 3 \)</label>
+        <label><input type="radio" name="q5" value="C"> \( 4 \)</label>
+        <label><input type="radio" name="q5" value="D"> \( 5 \)</label>
+      </div>
+
+    <!-- Questão 6 -->
+    <div class="question">
+      <p><strong>(EEAr)</strong> Considere a inequação \(x^2 − 1 ≤ 3\). Está contido no conjunto solução desta equação o intervalo:</p>
+      <div class="options">
+        <label><input type="radio" name="q6" value="A"> \( \[ -3, 0\] \)</label>
+        <label><input type="radio" name="q6" value="B"> \( \[ -1, 1\] \)</label>
+        <label><input type="radio" name="q6" value="C"> \( \[ 1, 3 \] \)</label>
+        <label><input type="radio" name="q6" value="D"> \( \[ 3, 4 \] \)</label>
+      </div>
+    
+    <!-- Questão 7 -->
+    <div class="question">
+      <p><strong>(EEAr)</strong> Resolvendo, em \( \mathbb{R}  \), o sistema de inequação abaixo:</p>
+      <p>\( \left\{  \begin{matrix} x \\  y  \end{matrix}   \right. \)</p>
+      <div class="options">
+        <label><input type="radio" name="q7" value="A"> \( \[ -3, 0\] \)</label>
+        <label><input type="radio" name="q7" value="B"> \( \[ -1, 1\] \)</label>
+        <label><input type="radio" name="q7" value="C"> \( \[ 1, 3 \] \)</label>
+        <label><input type="radio" name="q7" value="D"> \( \[ 3, 4 \] \)</label>
+      </div>
+
+      
+    
+    </div>
+    <!-- Campos ocultos para as respostas e acertos -->
+    <input type="hidden" name="q1_answer" id="hiddenQ1">
+    <input type="hidden" name="q2_answer" id="hiddenQ2">
+    <input type="hidden" name="q3_answer" id="hiddenQ3">
+    <input type="hidden" name="q4_answer" id="hiddenQ4">
+    <input type="hidden" name="q5_answer" id="hiddenQ4">
+    <input type="hidden" name="q6_answer" id="hiddenQ4">
+    <input type="hidden" name="q7_answer" id="hiddenQ4">
+      
+    <input type="hidden" name="correctAnswers" id="correctAnswers">
+
+    <button type="submit" id="submitButton">Enviar Respostas</button>
+  </form>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    // Respostas corretas
+    const correctAnswers = {
+      q1: "B", // A resposta correta para a questão 1
+      q2: "D", // A resposta correta para a questão 2
+      q3: "D"  // A resposta correta para a questão 3
+      q4: "B", // A resposta correta para a questão 4
+      q5: "D", // A resposta correta para a questão 5
+      q6: "D"  // A resposta correta para a questão 6
+      q7: "D"  // A resposta correta para a questão 7
+    };
+
+    // Contagem regressiva
+    let timeLeft = 2 * 60 * 60; // 2 horas em segundos
+
+    function updateTimer() {
+      const hours = Math.floor(timeLeft / 3600);
+      const minutes = Math.floor((timeLeft % 3600) / 60);
+      const seconds = timeLeft % 60;
+
+      // Atualiza a exibição da contagem regressiva
+      document.getElementById('timer').innerText = `Tempo restante: ${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+      // Decrementa o tempo restante
+      if (timeLeft > 0) {
+        timeLeft--;
+      } else {
+        clearInterval(timerInterval);
+        alert("O tempo acabou! Enviando as respostas...");
+        document.getElementById("quizForm").submit(); // Envia o formulário automaticamente ao acabar o tempo
+      }
+    }
+
+    // Atualiza o timer a cada segundo
+    const timerInterval = setInterval(updateTimer, 1000);
+
+    // Função para calcular acertos
+    function calculateCorrectAnswers() {
+      let score = 0;
+      const q1 = document.querySelector('input[name="q1"]:checked');
+      const q2 = document.querySelector('input[name="q2"]:checked');
+      const q3 = document.querySelector('input[name="q3"]:checked');
+      const q4 = document.querySelector('input[name="q4"]:checked');
+      const q5 = document.querySelector('input[name="q5"]:checked');
+      const q6 = document.querySelector('input[name="q6"]:checked');
+      const q7 = document.querySelector('input[name="q7"]:checked');
+      
+      if (q1 && q1.value === correctAnswers.q1) score++;
+      if (q2 && q2.value === correctAnswers.q2) score++;
+      if (q3 && q3.value === correctAnswers.q3) score++;
+      if (q4 && q4.value === correctAnswers.q4) score++;
+      if (q5 && q5.value === correctAnswers.q5) score++;
+      if (q6 && q6.value === correctAnswers.q6) score++;
+      if (q7 && q7.value === correctAnswers.q7) score++;
+      
+      return score;
+    }
+
+    // Preenche os campos ocultos com as respostas e o número de acertos
+    document.getElementById('quizForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Evita o envio padrão para que possamos manipular antes
+      document.getElementById('hiddenQ1').value = document.querySelector('input[name="q1"]:checked')?.value || 'Nenhuma resposta';
+      document.getElementById('hiddenQ2').value = document.querySelector('input[name="q2"]:checked')?.value || 'Nenhuma resposta';
+      document.getElementById('hiddenQ3').value = document.querySelector('input[name="q3"]:checked')?.value || 'Nenhuma resposta';
+      document.getElementById('hiddenQ4').value = document.querySelector('input[name="q4"]:checked')?.value || 'Nenhuma resposta';
+      document.getElementById('hiddenQ5').value = document.querySelector('input[name="q5"]:checked')?.value || 'Nenhuma resposta';
+      document.getElementById('hiddenQ6').value = document.querySelector('input[name="q6"]:checked')?.value || 'Nenhuma resposta';
+      document.getElementById('hiddenQ7').value = document.querySelector('input[name="q7"]:checked')?.value || 'Nenhuma resposta';
+
+      if (!q1 || !q2 || !q3 || !q4 || !q5 || !q6 || !q7) {
+        alert("Por favor, responda todas as questões antes de enviar.");
+        return;
+      }
+
+      // Calcula o número de acertos e envia como campo oculto
+      const score = calculateCorrectAnswers();
+      document.getElementById('correctAnswers').value = `Acertos: ${score}`;
+
+      document.getElementById('result').innerText = `Você acertou ${calculateCorrectAnswers()} de 7 questões.`;
+      
+      // Envia o formulário
+      this.submit();
+    });
+  </script>
+  <canvas id="resultChart"></canvas>
+</body>
+</html>
