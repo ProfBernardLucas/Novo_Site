@@ -97,15 +97,19 @@
 </head>
 <body>
   <h1>Simulado Interativo</h1>
-  <div class="timer" id="timer">Tempo restante: 2:00:00</div>
+  <h1>Formulário de Contato</h1>
+  <form id="formulario" onsubmit="event.preventDefault(); enviarFormulario();">
+    <label for="nome">Nome:</label>
+    <input type="text" id="nome" name="nome" required><br><br>
 
-  <form id="quizForm" action="https://formspree.io/f/xnnjzbyj" method="POST">
-    <!-- Nome do aluno -->
-    <div class="question">
-      <label for="studentName">Nome do aluno:</label>
-      <input type="text" id="studentName" name="studentName" required>
-    </div>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required><br><br>
 
+    <label for="mensagem">Mensagem:</label><br>
+    <textarea id="mensagem" name="mensagem" rows="5" required></textarea><br><br>
+
+    <button type="submit">Enviar</button>
+  </form>
     <!-- Questão 1 -->
     <div class="question">
       <p><strong>(EsSA 2012)</strong> Se \( f(2x + 1) = x^2 + 2x \), então \( f(2) \) vale:</p>
