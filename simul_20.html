@@ -1,1 +1,64 @@
-si
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+</head>
+<body>
+    <h1>Simulado Online</h1>
+    <form id="simuladoForm">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label>Questão 1: 2 + 2 = ?</label><br>
+        <input type="radio" name="q1" value="4" required>4<br>
+        <input type="radio" name="q1" value="5">5<br><br>
+
+        <button type="submit">Enviar</button>
+    </form>
+
+    <script>
+        // Configuração do Firebase (copie do Console do Firebase)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUmzZ6tQgD2PyL2rqaB6lx1zyFVYbPivM",
+            authDomain: "http://teste-simulado-82c5f.firebaseapp.com/",
+            projectId: "teste-simulado-82c5f",
+            storageBucket: "teste-simulado-82c5f",
+            messagingSenderId: "454355071413",
+            appId: "1:454355071413:web:da92559d798ca5e9c5a9fc"
+        };
+
+        // Inicializar Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Enviar dados para o Firestore
+        document.getElementById("simuladoForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const dados = {
+                nome: form.nome.value,
+                email: form.email.value,
+                q1: form.q1.value,
+                dataEnvio: new Date().toISOString()
+            };
+
+            try {
+                await db.collection("respostasSimulado").add(dados);
+                alert("Respostas enviadas com sucesso!");
+                form.reset();
+            } catch (error) {
+                console.error("Erro ao enviar dados:", error);
+                alert("Erro ao enviar dados. Tente novamente.");
+            }
+        });
+    </script>
+</body>
+</html>
