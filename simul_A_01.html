@@ -1,1 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado</title>
+</head>
+<body>
+    <h2>Simulado de Física e Matemática</h2>
+    <form id="simuladoForm">
+        Nome: <input type="text" id="nome" required> <br><br>
+        
+        <label>1. Qual é a fórmula da velocidade?</label><br>
+        <input type="radio" name="q1" value="V = d/t"> V = d/t <br>
+        <input type="radio" name="q1" value="F = m*a"> F = m*a <br><br>
+
+        <label>2. Qual é a unidade do trabalho?</label><br>
+        <input type="radio" name="q2" value="Joule"> Joule <br>
+        <input type="radio" name="q2" value="Newton"> Newton <br><br>
+
+        <button type="submit">Enviar Respostas</button>
+    </form>
+<script>
+    document.getElementById("simuladoForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+        
+        const nome = document.getElementById("nome").value;
+        const q1 = document.querySelector('input[name="q1"]:checked')?.value || "";
+        const q2 = document.querySelector('input[name="q2"]:checked')?.value || "";
+
+        const resposta = `{"nome": "${nome}", "q1": "${q1}", "q2": "${q2}"}`;
+
+        // Criar um Issue no GitHub
+        const repo = "SEU_USUARIO/SEU_REPOSITORIO";
+        const token = "SEU_TOKEN_GITHUB";
+
+        await fetch(`https://api.github.com/repos/${repo}/issues`, {
+            method: "POST",
+            headers: {
+                "Authorization": `token ${token}`,
+                "Accept": "application/vnd.github.v3+json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                title: `Resposta de ${nome}`,
+                body: resposta,
+                labels: ["resposta"]
+            })
+        });
+
+        alert("Resposta enviada!");
+    });
+</script>
+
+</body>
+</html>
 
