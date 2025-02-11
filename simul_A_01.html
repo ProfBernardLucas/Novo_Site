@@ -32,8 +32,7 @@
 
         // Criar um Issue no GitHub
         const repo = "ProfBernardLucas/Novo_Site";
-        const token = "SEU_TOKEN_GITHUB";
-
+        
         await fetch(`https://api.github.com/repos/${repo}/issues`, {
             method: "POST",
             headers: {
