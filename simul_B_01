@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado</title>
+</head>
+<body>
+    <h2>Simulado de Física e Matemática</h2>
+    <form id="simuladoForm">
+        Nome: <input type="text" id="nome" required> <br><br>
+        
+        <label>1. Qual é a fórmula da velocidade?</label><br>
+        <input type="radio" name="q1" value="V = d/t"> V = d/t <br>
+        <input type="radio" name="q1" value="F = m*a"> F = m*a <br><br>
+
+        <label>2. Qual é a unidade do trabalho?</label><br>
+        <input type="radio" name="q2" value="Joule"> Joule <br>
+        <input type="radio" name="q2" value="Newton"> Newton <br><br>
+
+        <button type="submit">Enviar Respostas</button>
+    </form>
+
+<script>
+    document.getElementById("simuladoForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+        
+        const nome = document.getElementById("nome").value;
+        const q1 = document.querySelector('input[name="q1"]:checked')?.value || "";
+        const q2 = document.querySelector('input[name="q2"]:checked')?.value || "";
+
+        const resposta = {
+            nome: nome,
+            q1: q1,
+            q2: q2
+        };
+
+        // URL do seu Google Apps Script
+        const url = 'https://script.google.com/macros/s/AKfycbwPyyFoyr1NX6fc3Zx38UBjAnwDKDdRO9IzkuHuPVBvPwFbsx1o1UoD1pvQPFDUrr57/exec';
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(resposta)
+        });
+
+        if (response.ok) {
+            alert("Resposta enviada com sucesso!");
+        } else {
+            alert("Erro ao enviar resposta!");
+        }
+    });
+</script>
+
+</body>
+</html>
