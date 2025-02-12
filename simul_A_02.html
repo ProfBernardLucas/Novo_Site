@@ -1,0 +1,27 @@
+<script>
+    document.getElementById("simuladoForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+        
+        const nome = document.getElementById("nome").value;
+        const q1 = document.querySelector('input[name="q1"]:checked')?.value || "";
+        const q2 = document.querySelector('input[name="q2"]:checked')?.value || "";
+
+        const resposta = `Nome: ${nome}\nQ1: ${q1}\nQ2: ${q2}`;
+
+        // Enviar resposta para um backend (GitHub Actions processará depois)
+        await fetch("https://api.github.com/repos/ProfBernardLucas/Novo_Site/issues", {
+            method: "POST",
+            headers: {
+                "Accept": "application/vnd.github.v3+json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                title: `Resposta de ${nome}`,
+                body: resposta,
+                labels: ["resposta"]
+            })
+        });
+
+        alert("Resposta enviada!");
+    });
+</script>
