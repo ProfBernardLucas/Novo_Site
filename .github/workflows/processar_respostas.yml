@@ -12,24 +12,20 @@ jobs:
       - name: Clonar o repositório
         uses: actions/checkout@v3
 
-      - name: Instalar jq para manipular JSON
-        run: sudo apt-get install jq
-
       - name: Adicionar nova resposta ao JSON
         run: |
-          # Capturar o corpo do Issue (a resposta do aluno)
           ISSUE_BODY=$(jq -r '.issue.body' $GITHUB_EVENT_PATH)
           
-          # Criar o arquivo se não existir
           if [ ! -f respostas.json ]; then echo "[]" > respostas.json; fi
           
-          # Adicionar a resposta ao JSON
           jq ". + [{\"resposta\": \"$ISSUE_BODY\"}]" respostas.json > temp.json && mv temp.json respostas.json
 
       - name: Commit e push das mudanças
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add respostas.json
           git commit -m "Nova resposta adicionada"
-          git push
+          git push https://x-access-token:${GH_TOKEN}@github.com/ProfBernardLucas/Novo_Site.git
