@@ -209,33 +209,35 @@
 
     <script>
         document.getElementById("simuladoForm").addEventListener("submit", async function(event) {
-            event.preventDefault();
-            
-            const nome = document.getElementById("nome").value;
+    event.preventDefault();
 
-            // Captura as respostas das questões
-            const respostas = {};
-            for (let i = 1; i <= 48; i++) {
-                const resposta = document.querySelector('input[name="q' + i + '"]:checked')?.value || '';
-                respostas['q' + i] = resposta;
-            }
+    const nome = document.getElementById("nome").value;
 
-            // Envia as respostas para o Google Apps Script
-            const url = 'https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbxzNbd3OcFTVKbU4za_cPBmh73D45XLknG2G014ZDh5YWWwdAZ-jXN80LHHiY0_BvRzeA/exec'; // Substitua pela sua URL do Google Apps Script
+    // Captura as respostas das questões
+    const respostas = {};
+    for (let i = 1; i <= 48; i++) {
+        const resposta = document.querySelector('input[name="q' + i + '"]:checked')?.value || '';
+        respostas['q' + i] = resposta;
+    }
 
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    nome: nome,
-                    ...respostas
-                })
-            });
+    // Envia as respostas para o Google Apps Script
+    const url = 'https://script.google.com/macros/s/AKfycbwPyyFoyr1NX6fc3Zx38UBjAnwDKDdRO9IzkuHuPVBvPwFbsx1o1UoD1pvQPFDUrr57/exec'; // Substitua pela sua URL do Google Apps Script
 
-            alert("Respostas enviadas com sucesso!");
-        });
+    const params = new URLSearchParams();
+    params.append('nome', nome);
+
+    // Adiciona as respostas no formato correto
+    for (let i = 1; i <= 48; i++) {
+        params.append('q' + i, respostas['q' + i]);
+    }
+
+    const response = await fetch(url, {
+        method: 'POST',
+        body: params
+    });
+
+    alert("Respostas enviadas com sucesso!");
+});
     </script>
 </body>
 </html>
