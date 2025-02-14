@@ -7,34 +7,45 @@
       <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
       <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-      <script>
-      // Tempo inicial em segundos (2 horas)
-        let tempoRestante = 2 * 60 * 60; 
+<script>
+    // Tempo total do simulado (2 horas em segundos)
+    const TEMPO_TOTAL = 2 * 60 * 60; 
+    let tempoRestante;
 
-        function atualizarTimer() {
-          let horas = Math.floor(tempoRestante / 3600);
-          let minutos = Math.floor((tempoRestante % 3600) / 60);
-          let segundos = tempoRestante % 60;
+    // Recupera a hora de início do localStorage (ou define se for a primeira vez)
+    let inicio = localStorage.getItem("inicioSimulado");
 
-          // Formatar para exibir dois dígitos
-          let tempoFormatado = 
+    if (!inicio) {
+        inicio = Date.now(); // Marca o tempo atual
+        localStorage.setItem("inicioSimulado", inicio);
+    }
+
+    function atualizarTimer() {
+        // Calcula o tempo decorrido desde o início
+        let tempoDecorrido = Math.floor((Date.now() - inicio) / 1000);
+        tempoRestante = TEMPO_TOTAL - tempoDecorrido;
+
+        let horas = Math.floor(tempoRestante / 3600);
+        let minutos = Math.floor((tempoRestante % 3600) / 60);
+        let segundos = tempoRestante % 60;
+
+        let tempoFormatado = 
             (horas < 10 ? "0" : "") + horas + ":" +
             (minutos < 10 ? "0" : "") + minutos + ":" +
             (segundos < 10 ? "0" : "") + segundos;
 
-          document.getElementById("timer").textContent = "Tempo restante: " + tempoFormatado;
+        document.getElementById("timer").textContent = "Tempo restante: " + tempoFormatado;
 
-          if (tempoRestante === 0) {
+        if (tempoRestante <= 0) {
             clearInterval(contagemRegressiva);
-            document.getElementById("simuladoForm").submit();
-          } else {
-            tempoRestante--;
-          }
+            localStorage.removeItem("inicioSimulado"); // Limpa o tempo salvo
+            document.getElementById("simuladoForm").submit(); // Envia o formulário automaticamente
         }
+    }
 
-      // Atualiza o timer a cada segundo
-      let contagemRegressiva = setInterval(atualizarTimer, 1000);
-    </script>
+    // Atualiza o timer a cada segundo
+    let contagemRegressiva = setInterval(atualizarTimer, 1000);
+</script>
       <style>
         body {
           font-family: Arial, sans-serif;
