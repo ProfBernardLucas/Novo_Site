@@ -512,27 +512,39 @@
         });
       }
     </script>          
-  //////
-      <script>      
+  
+    <script>
+      document.getElementById("simuladoForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const nome = document.getElementById("nome").value;
+
+      // Captura as respostas das questões
+      const respostas = {};
+      for (let i = 1; i <= 48; i++) {
+        const resposta = document.querySelector('input[name="q' + i + '"]:checked')?.value || '';
+        respostas['q' + i] = resposta;
+      }
+
       // Envia as respostas para o Google Apps Script
       // https://cors-anywhere.herokuapp.com/        
       const url = 'https://script.google.com/macros/s/AKfycbxzNbd3OcFTVKbU4za_cPBmh73D45XLknG2G014ZDh5YWWwdAZ-jXN80LHHiY0_BvRzeA/exec'; // Substitua pela sua URL do Google Apps Script
-  
+
       const params = new URLSearchParams();
       params.append('nome', nome);
-  
+
       // Adiciona as respostas no formato correto
       for (let i = 1; i <= 48; i++) {
-          params.append('q' + i, respostas['q' + i]);
+        params.append('q' + i, respostas['q' + i]);
       }
-  
+
       const response = await fetch(url, {
-          method: 'POST',
-          body: params
+        method: 'POST',
+        body: params
       });
-  
+
       alert("Respostas enviadas com sucesso!");
-  });
-      </script>
+      });
+    </script>
   </body>
   </html>
