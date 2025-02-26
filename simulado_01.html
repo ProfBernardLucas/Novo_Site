@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+  <html lang="pt">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Simulado</title>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Tempo total do simulado (2 horas em segundos)
+    const TEMPO_TOTAL = 2 * 60 * 60; 
+    let tempoRestante;
+
+    // Recupera a hora de início do localStorage (ou define se for a primeira vez)
+    let inicio = localStorage.getItem("inicioSimulado");
+
+    if (!inicio) {
+        inicio = Date.now(); // Marca o tempo atual
+        localStorage.setItem("inicioSimulado", inicio);
+    }
+
+    function atualizarTimer() {
+        // Calcula o tempo decorrido desde o início
+        let tempoDecorrido = Math.floor((Date.now() - inicio) / 1000);
+        tempoRestante = TEMPO_TOTAL - tempoDecorrido;
+
+        let horas = Math.floor(tempoRestante / 3600);
+        let minutos = Math.floor((tempoRestante % 3600) / 60);
+        let segundos = tempoRestante % 60;
+
+        let tempoFormatado = 
+            (horas < 10 ? "0" : "") + horas + ":" +
+            (minutos < 10 ? "0" : "") + minutos + ":" +
+            (segundos < 10 ? "0" : "") + segundos;
+
+        document.getElementById("timer").textContent = "Tempo restante: " + tempoFormatado;
+
+        if (tempoRestante <= 0) {
+            clearInterval(contagemRegressiva);
+            localStorage.removeItem("inicioSimulado"); // Limpa o tempo salvo
+            document.getElementById("simuladoForm").submit(); // Envia o formulário automaticamente
+        }
+    }
+
+    // Atualiza o timer a cada segundo
+    let contagemRegressiva = setInterval(atualizarTimer, 1000);
+</script>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+          background-color: #f9f9f9;
+        }
+        h1, h2 {
+          text-align: center;
+        }
+        .question {
+          margin-bottom: 20px;
+          padding: 10px;
+          background-color: #fff;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+        }
+        .options label {
+          display: block;
+          margin-bottom: 10px;
+        }
+        .options input {
+          margin-right: 10px;
+        }
+        button {
+          display: block;
+          margin: 20px auto;
+          padding: 10px 20px;
+          font-size: 16px;
+          background-color: #007BFF;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+        button:disabled {
+          background-color: #ccc;
+          cursor: not-allowed;
+        }
+        .timer {
+          text-align: center;
+          font-size: 18px;
+          font-weight: bold;
+          color: red;
+          margin-bottom: 20px;
+        }
+        .result {
+          text-align: center;
+          font-size: 18px;
+          margin-top: 20px;
+        }
+        canvas {
+          max-width: 100%;
+          margin: 20px auto;
+          display: block;
+        }
+    </style>
+  </head>
+  <body>
+      <h2>Simulado de Física e Matemática</h2>
+      <div class="timer" id="timer">Tempo restante: 2:00:00</div>
+      <form id="simuladoForm">
+          Nome: <input type="text" id="nome" required> <br><br>
+  
+          <!-- Exemplo de questões -->
+          <label>1. Seja \( \alpha \)  um ângulo agudo. Se somarmos a medida de um ângulo reto à medida de \( \alpha \) e, em seguida, subtrairmos dessa soma a medida do suplemento de \( \alpha \), obteremos sempre a medida de um ângulo.</label><br>
+          <input type="radio" name="q1" value="A"> A) \( x > 4 \text{ e } x \neq 1 \) <br> 
+          <input type="radio" name="q1" value="B"> B) \( x < 4 \text{ e } x \neq \pm 1 \) <br>
+          <input type="radio" name="q1" value="C"> C) \( x < -4 \text{ e } x \neq -1 \) <br>
+          <input type="radio" name="q1" value="D"> D) \( x > -4 \text{ e } x \neq -1 \) <br><br>
+  
+          <label>2. (EEAr) A quantidade de números inteiros positivos que verificam as inequações \( 3x-8 < x \text{ e } x+20 > 10x \), ao mesmo tempo é:</label><br>
+          <input type="radio" name="q2" value="A"> \( 1 \)<br>
+          <input type="radio" name="q2" value="B"> \( 2 \)<br>
+          <input type="radio" name="q2" value="C"> \( 3 \)<br>
+          <input type="radio" name="q2" value="D"> \( 4 \)<br><br>
+            
+          <label>3. (EEAr) A solução da inequação \(2(x + 2) + 5x \leq 4(x + 3)\) é um intervalo real. Pode-se afirmar que pertence a esse intervalo o número:</label><br>
+        	<input type="radio" name="q3" value="A"> \( 2 \)<br>
+          <input type="radio" name="q3" value="B"> \( 3 \)<br>
+          <input type="radio" name="q3" value="C"> \( 4 \)<br>
+          <input type="radio" name="q3" value="D"> \( 5 \)<br><br>
+  
+           <label>4. Na Escola da Marinha Mercante, há alunos de ambos os sexos (130 mulheres e 370 homens), divididos entre os Cursos Básico, de Máquinas e de Náutica. Sabe-se que do total de 130 alunos do Curso de Máquinas, 20 são mulheres. O Curso de Náutica tem 270 alunos no total e o Curso Básico tem o mesmo número de homens e mulheres. Quantas mulheres há no Curso de Náutica?</label><br>
+          <input type="radio" name="q4" value="A"> A) 50 <br>
+          <input type="radio" name="q4" value="B"> B) 55 <br>
+          <input type="radio" name="q4" value="C"> C) 60 <br>
+          <input type="radio" name="q4" value="D"> D) 65 <br><br>
+  
+           <label>5. As raízes da equação \(−x^2 + 7x − 6 = 0\) são dois números</label><br>
+          <input type="radio" name="q5" value="A"> A) simétricos. <br>
+          <input type="radio" name="q5" value="B"> B) naturais pares. <br>
+          <input type="radio" name="q5" value="C"> C) primos entre si. <br>
+          <input type="radio" name="q5" value="D"> D) inteiros e múltiplos de 3. <br><br>
+  
+           <label>6. \( \mathbb{N}\) é o conjunto dos números naturais, \( K = \{3x \mid x \in \mathbb{N} \}\), \( L = \{5x \mid x \in \mathbb{N} \}\) e \( M = \{15x \mid x \in \mathbb{N}\}\). A afirmativa correta é:</label><br>
+          <input type="radio" name="q6" value="A"> A) \(K \cup L = M \) <br>
+          <input type="radio" name="q6" value="B"> B) \(K \subset L \) <br>
+          <input type="radio" name="q6" value="C"> C) \(K - L = M \) <br>
+          <input type="radio" name="q6" value="D"> D) \(K \cap L = M \) <br><br>
+  
+           <label>7. Ao comparar o valor de \(f(1)\) e \(f(-1)\) da função \(f(x) = 5x^6 + 4x^2 + 3x - 1\), obtém-se: </label><br>
+          <input type="radio" name="q7" value="A"> A) \( f(1) < f(-1) \) <br>
+          <input type="radio" name="q7" value="B"> B) \( f(1) = f(-1) \) <br>
+          <input type="radio" name="q7" value="C"> C) \( f(1) > 2f(-1) \) <br>
+          <input type="radio" name="q7" value="D"> D) \( f(1) = 2f(-1) \) <br><br>
+  
+           <label>8. Na equação \(2^{x+1} + 2^{-x} = 3\), é verdadeira a afirmativa:</label><br>
+          <input type="radio" name="q8" value="A"> A) Uma das raízes é 1. <br>
+          <input type="radio" name="q8" value="B"> B) A soma das raízes é um número inteiro positivo. <br>
+          <input type="radio" name="q8" value="C"> C) O produto das raízes é um número inteiro negativo. <br>
+          <input type="radio" name="q8" value="D"> D) O quociente das raízes pode ser zero (0). <br><br>
+  
+           <label>9. O valor real que satisfaz a equação \(4^x - 2^x - 2 = 0\) é um número</label><br>
+          <input type="radio" name="q9" value="A"> A) entre -2 e 2 <br>
+          <input type="radio" name="q9" value="B"> B) entre 2 e 4 <br>
+          <input type="radio" name="q9" value="C"> C) maior que 4 <br>
+          <input type="radio" name="q9" value="D"> D) menor que -2 <br><br>
+  
+           <label>10. Dada a função \(f(x-1) = x^2 + 3x - 2\), considerando os valores de \(f(1)\) e \(f(2)\), pode-se afirmar corretamente que:</label><br>
+          <input type="radio" name="q10" value="A"> A) \(f(1) = f(2) + 4\) <br>
+          <input type="radio" name="q10" value="B"> B) \(f(2) = f(1) - 1\) <br>
+          <input type="radio" name="q10" value="C"> C) \(f(2) = 2f(1)\) <br>
+          <input type="radio" name="q10" value="D"> D) \(f(1) = 2f(2)\) <br><br>
+  
+           <label>11. Sabe-se que a função \(f(x) = \frac{x+3}{5}\) é invertível. Assim, \(f^{-1}(3)\) é:</label><br>
+          <input type="radio" name="q11" value="A"> A) 3 <br>
+          <input type="radio" name="q11" value="B"> B) 4 <br>
+          <input type="radio" name="q11" value="C"> C) 6 <br>
+          <input type="radio" name="q11" value="D"> D) 12 <br><br>
+  
+           <label>12. (EEAr) Seja a função \(f\) de \(R - \{3\}\) em \(R - \{1\}\), definida por \(f(x) = \frac{x+3}{x-3}\) . Pela inversa de \(f\), o número 5 é imagem do número:</label><br>
+          <input type="radio" name="q12" value="A"> A) 1/4 <br>
+          <input type="radio" name="q12" value="B"> B) 1/3 <br>
+          <input type="radio" name="q12" value="C"> C) 4 <br>
+          <input type="radio" name="q12" value="D"> D) 3 <br><br>
+  
+           <label>13. Se \(f(x) = \log{}{x}\) e \(a . b = 1\), então \(f(a) + f(b)\) é igual a:</label><br>
+          <input type="radio" name="q13" value="A"> A) 0 <br>
+          <input type="radio" name="q13" value="B"> B) 1 <br>
+          <input type="radio" name="q13" value="C"> C) 10 <br>
+          <input type="radio" name="q13" value="D"> D) 100 <br><br>
+  
+           <label>14. A equação \( \log_{2}{(9^{x-1+7})} = 2 + \log_{2}{(3^{x-1}+1)} \) possui: </label><br>
+          <input type="radio" name="q14" value="A"> A) duas raízes positivas. <br>
+          <input type="radio" name="q14" value="B"> B) duas raízes negativas. <br>
+          <input type="radio" name="q14" value="C"> C) duas raízes simétricas. <br>
+          <input type="radio" name="q14" value="D"> D) uma única raiz. <br><br>
+  
+           <label>15. Se \( \log_{3}{2} = a \) \( \log_{7}{3} = b \), então \( \log_{3}{14} \) é igual a: </label><br>
+          <input type="radio" name="q15" value="A"> A) \(\frac{b+1}{a} \) <br>
+          <input type="radio" name="q15" value="B"> B) \(\frac{a+1}{b} \) <br>
+          <input type="radio" name="q15" value="C"> C) \(\frac{ab+1}{b} \) <br>
+          <input type="radio" name="q15" value="D"> D) \(\frac{ab+1}{a} \) <br><br>
+          
+           <label>16. Se \(a > 0\), \(b > 0\), \(c > 0\) e \(c \neq 1\), então é correto afirmar que</label><br>
+          <input type="radio" name="q16" value="A"> A) \( log_{c}{(a+b)} = (log_{c}{a}) + (log_{c} {b}) \) <br>
+          <input type="radio" name="q16" value="B"> B) \( log_{c}{(a+b)} = (log_{c}{a}) . (log_{c} {b}) \) <br>
+          <input type="radio" name="q16" value="C"> C) \( log_{c}{(ab)} = (log_{c}{a}) + (log_{c} {b}) \) <br>
+          <input type="radio" name="q16" value="D"> D) \( log_{c}{(ab)} = (log_{c}{a}) . (log_{c} {b}) \) <br><br>
+       
+          <label>17. A desigualdade \( {\frac{1}{2}}^{3x-5} > {\frac{1}{4}}^{x} \) tem como conjunto solução:  </label><br>
+          <input type="radio" name="q17" value="A"> A) \( S = \{ x \in \mathbb{R} \mid x > 1 \} \) <br>
+          <input type="radio" name="q17" value="B"> B) \( S = \{ x \in \mathbb{R} \mid x < 1 \} \) <br>
+          <input type="radio" name="q17" value="C"> C) \( S = \{ x \in \mathbb{R} \mid x > 1 \} \) <br>
+          <input type="radio" name="q17" value="D"> D) \( S = \{ x \in \mathbb{R} \mid 1< x < 5 \} \) <br><br>
+          
+           <label>18. Seja a função \(f(x) = 2x^2 + 8x + 5\). Se \(P(a; b) \) é o vértice do gráfico de \(f\), então \( \mid a + b \mid \) é igual a</label><br>
+          <input type="radio" name="q18" value="A"> A) 5 <br>
+          <input type="radio" name="q18" value="B"> B) 5 <br>
+          <input type="radio" name="q18" value="C"> C) 3 <br>
+          <input type="radio" name="q18" value="D"> D) 2 <br><br>
+          
+           <label>19. Uma função quadrática tem o eixo das ordenadas como eixo de simetria. A distância entre os zeros da função é de 4 unidades, e a função tem \(-5\) como valor mínimo. Esta função é definida por</label><br>
+          <input type="radio" name="q19" value="A"> A) \( y = \frac{5}{4}x^2 - 20 \) <br>
+          <input type="radio" name="q19" value="B"> B) \( y = \frac{5}{4}x^2 - 20x \) <br>
+          <input type="radio" name="q19" value="C"> C) \( y = \frac{5}{4}x^2 - 5 \) <br>
+          <input type="radio" name="q19" value="D"> D) \( y = \frac{5}{4}x^2 - 5x \) <br><br>
+          
+           <label>20. (EEAr) Considere a equação \( \mid 3x - 6 \mid = x + 2 \). Com respeito às raízes dessa equação, podemos afirmar que elas pertencem ao intervalo</label><br>
+          <input type="radio" name="q20" value="A"> A) \( [ 1, 2 ] \) <br>
+          <input type="radio" name="q20" value="B"> B) \( ] 2, 5 [ \) <br>
+          <input type="radio" name="q20" value="C"> C) \( ] 0, 4 ] \) <br>
+          <input type="radio" name="q20" value="D"> D) \( ] 1, 4 ] \) <br><br>
+  
+           <label>21. Seja \( f(x) = \mid x - 3 \mid \) uma função. A soma dos valores de x para os quais a função assume o valor</label><br>
+          <input type="radio" name="q21" value="A"> A) 3 <br>
+          <input type="radio" name="q21" value="B"> B) 4 <br>
+          <input type="radio" name="q21" value="C"> C) 6 <br>
+          <input type="radio" name="q21" value="D"> D) 7 <br><br>
+
+           <label>22. Na figura estão representados os gráficos das funções definidas por: </label><br>
+          <p>\[
+            f(x) = (x+1)(x-3) \quad \text{e} \quad g(x) = \frac{x}{2} + 3.
+          \]</p>
+          <img src="qqq.png" alt="" width="300px"><br><br>
+          <label>As ordenadas dos pontos \( P \) e \( Q \) são, respectivamente:</label><br>
+          <input type="radio" name="q22" value="A"> A) \( \frac{3}{2} \) e \( -3 \) <br>
+          <input type="radio" name="q22" value="B"> B) \( \frac{3}{2} \) e \( -4 \) <br>
+          <input type="radio" name="q22" value="C"> C) \( \frac{9}{4} \) e \( -3 \) <br>
+          <input type="radio" name="q22" value="D"> D) \( \frac{9}{4} \) e \( -4 \) <br><br>
+  
+            
+           <label>23. Para que \(f(x) = (2m - 6)x + 4 \) seja crescente em \( \mathbb{R} \), o valor real de \( m \) deve ser tal que: </label><br>
+          <input type="radio" name="q23" value="A"> A) \( m > 3 \) <br>
+          <input type="radio" name="q23" value="B"> B) \( m < 2 \) <br>
+          <input type="radio" name="q23" value="C"> C) \( m < 1 \) <br>
+          <input type="radio" name="q23" value="D"> D) \( m = 0 \) <br><br>
+  
+           <label>24. Analisando o gráfico da função \(f\) da figura, percebe-se que, nos intervalos \( [-5;-2] \) e \([-1; 2]\) de seu domínio, ela é, respectivamente,</label><br>
+          <img src="qqq1.png" alt="" width="300px"><br><br>
+          <input type="radio" name="q24" value="A"> A) crescente e crescente <br>
+          <input type="radio" name="q24" value="B"> B) crescente e decrescente <br>
+          <input type="radio" name="q24" value="C"> C) decrescente e crescente <br>
+          <input type="radio" name="q24" value="D"> D) decrescente e decrescente <br><br>
+  
+           <label>25. Dois trens trafegam, no mesmo trilho e no mesmo sentido, em um trecho retilíneo de uma ferrovia. O trem que vai à frente está com velocidade constante de módulo igual a 36 km/h, e o outro, que está atrás, mantém a velocidade constante de módulo igual a 72 km/h.             Assinale a alternativa em que está indicado o tempo mínimo necessário para que o trem mais rápido colida com o outro de menor velocidade, a partir do instante em que a distância entre eles for de 18 km.</label><br>
+          <input type="radio" name="q25" value="A"> A) 30 minutos <br>
+          <input type="radio" name="q25" value="B"> B) 45 minutos <br>
+          <input type="radio" name="q25" value="C"> C) 60 minutos <br>
+          <input type="radio" name="q25" value="D"> D) 90 minutos <br><br>
+  
+           <label>26. Durante uma Olimpíada, um velocista corre um quarto de um percurso retilíneo com velocidade escalar média \(v\) e o restante do percurso, com velocidade escalar média 2v. No percurso total, a velocidade escalar média do atleta é de:</label><br>
+          <input type="radio" name="q26" value="A"> A) 1,2\(v\) <br>
+          <input type="radio" name="q26" value="B"> B) 1,4\(v\) <br>
+          <input type="radio" name="q26" value="C"> C) 1,6\(v\) <br>
+          <input type="radio" name="q26" value="D"> D) 1,8\(v\) <br><br>
+  
+           <label>27. Um ônibus de 8 m de comprimento, deslocando-se com uma velocidade constante de 36 km/h atravessa uma ponte de 12 m de comprimento. Qual o tempo gasto pelo ônibus, em segundos, para atravessar totalmente a ponte?</label><br>
+          <input type="radio" name="q27" value="A"> A) 1 <br>
+          <input type="radio" name="q27" value="B"> B) 2 <br>
+          <input type="radio" name="q27" value="C"> C) 3 <br>
+          <input type="radio" name="q27" value="D"> D) 4 <br><br>
+  
+           <label>28. Um móvel completa 1/3 de um percurso com o módulo da sua velocidade média igual a 2 km/h e o restante com o módulo da velocidade média igual a 8 km/h. Sendo toda a trajetória retilínea, podemos afirmar que a velocidade média desse móvel durante todo o percurso, em km/h, foi igual a:</label><br>
+          <input type="radio" name="q28" value="A"> A) 4 <br>
+          <input type="radio" name="q28" value="B"> B) 5 <br>
+          <input type="radio" name="q28" value="C"> C) 6 <br>
+          <input type="radio" name="q28" value="D"> D) 10 <br><br>
+  
+           <label>29. Sabendo que o trabalho pode ser calculado como a variação da energia cinética e que a energia cinética pode ser escrita como \(E_c = mv^2/2 \), onde \(m\) é a massa e \(v\) a velocidade, podemos escrever, no SI, a unidade da energia cinética em termos das unidades fundamentais da mecância como:</label><br>
+          <input type="radio" name="q29" value="A"> A) \( kg \) . \( \frac{m}{s} \)  <br>
+          <input type="radio" name="q29" value="B"> B) \( kg \) . \( \frac{m^2}{s^3} \) <br>
+          <input type="radio" name="q29" value="C"> C) \( kg \) . \( \frac{m}{s^2} \) <br>
+          <input type="radio" name="q29" value="D"> D) \( kg \) . \( \frac{m^2}{s^2} \) <br><br>
+  
+           <label>30. Uma empresa com 280 funcionários, realizou estudos estatísticos e constatou que o seu consumo médio diário de água é de dois litros por pessoa. Determine o consumo mensal médio de água da empresa, em metros cúbicos. Considere o mês com 30 dias:</label><br>
+          <input type="radio" name="q30" value="A"> A) 16,8 <br>
+          <input type="radio" name="q30" value="B"> B) 168 <br>
+          <input type="radio" name="q30" value="C"> C) 1.680 <br>
+          <input type="radio" name="q30" value="D"> D) 16.800 <br><br>
+  
+          <label>31. Qual é a unidade do trabalho?</label><br>
+          <input type="radio" name="q31" value="A"> A) V = d/t <br>
+          <input type="radio" name="q31" value="B"> B) F = m*a <br>
+          <input type="radio" name="q31" value="C"> C) V = d/t <br>
+          <input type="radio" name="q31" value="D"> D) F = m*a <br><br>
+  
+          <label>32. Um automóvel faz uma viagem em que, na primeira metade do percurso, é obtida uma velocidade média de 100 km/h. Na segunda metade a velocidade média desenvolvida é de 150 km/h. Pode-se afirmar que a velocidade média, ao longo de todo o percurso, é, em km/h:</label><br>
+          <input type="radio" name="q32" value="A"> A) 120 <br>
+          <input type="radio" name="q32" value="B"> B) 125 <br>
+          <input type="radio" name="q32" value="C"> C) 110 <br>
+          <input type="radio" name="q32" value="D"> D) 130 <br><br>
+
+          <label>33. Com relação ao movimento de um ponto material numa trajetória orientada, são feitas três afirmações:</label><br>
+            <p>I – Se o movimento se dá no sentido da trajetória, a variação de espaço é positiva.</p>
+            <p>II - Se o movimento se dá em sentido oposto ao da trajetória, a variação de espaço é negativa.</p>
+            <p>III - No sistema internacional (SI), o espaço é medido em quilômetros.</p>
+            <label>Assinale a alternativa correta:</label>
+          <input type="radio" name="q33" value="A"> A) Apenas as afirmações I e II são corretas. <br>
+          <input type="radio" name="q33" value="B"> B) Apenas as afirmações I e III são corretas. <br>
+          <input type="radio" name="q33" value="C"> C) As três afirmações são corretas. <br>
+          <input type="radio" name="q33" value="D"> D) Nenhuma das afirmações é correta. <br><br>
+
+          <label>34. As figuras abaixo apresentam pontos que indicam as posições de um móvel, obtidas em intervalos de tempos iguais. Em quais figuras o móvel apresenta aceleração NÃO nula </label><br>
+          <img src="qqq2.png" alt="" width="300px"><br><br>
+          <input type="radio" name="q34" value="A"> A) Apenas em I, III e IV. <br>
+          <input type="radio" name="q34" value="B"> B) Apenas em II e IV. <br>
+          <input type="radio" name="q34" value="C"> C) Apenas I, II e III. <br>
+          <input type="radio" name="q34" value="D"> D) Em I, II, III e IV. <br><br>
+
+          <label>35. A posição \(x\) de um corpo que se move ao longo de uma reta, em função do tempo \(t\), é mostrada no gráfico. Analise as afirmações abaixo e marque a alternativa correta.</label><br>
+          <img src="qqq3.png" alt="" width="300px"><br><br>
+          <input type="radio" name="q35" value="A"> A) velocidade do corpo é positiva nos quatro trechos. <br>
+          <input type="radio" name="q35" value="B"> B) A aceleração do corpo é nula apenas no trecho IV. <br>
+          <input type="radio" name="q35" value="C"> C) A trajetória descrita pelo corpo no trecho I é parabólica. <br>
+          <input type="radio" name="q35" value="D"> D) O movimento descrito pelo corpo no trecho III é progressivo e retardado <br><br>
+
+          <label>36. Dois ciclistas, A e B, deslocam-se simultaneamente numa mesma estrada, ambos em movimento retilíneo, conforme representado no gráfico (posições X tempo) abaixo. Os movimentos dos ciclistas A e B, respectivamente, são classificados como:</label><br>
+          <img src="qqq4.png" alt="" width="300px"><br><br>
+          <input type="radio" name="q36" value="A"> A) uniforme e acelerado. <br>
+          <input type="radio" name="q36" value="B"> B) uniforme e retardado. <br>
+          <input type="radio" name="q36" value="C"> C) acelerado e uniforme. <br>
+          <input type="radio" name="q36" value="D"> D) acelerado e retardado <br><br>
+  
+          <label>37. Um nadador percorre, sem parar, uma piscina iniciando no ponto A e terminando em D, conforme o desenho. Os trechos AB e CD são percorridos em MRU com velocidades de módulos, respectivamente, iguais a 1 m/s e 2 m/s. O trecho BC é percorrido em MRUV e é feito pelo nadador com uma aceleração de módulo, em \(m/s^2\), igual a: </label><br>
+          <input type="radio" name="q37" value="A"> A) 0,1 <br>
+          <input type="radio" name="q37" value="B"> B) 0,2 <br>
+          <input type="radio" name="q37" value="C"> C) 0,5 <br>
+          <input type="radio" name="q37" value="D"> D) 0,05 <br><br>
+  
+          <label>38. Uma pedra é abandonada exatamente da beira de um poço de 320 m de profundidade. Como as dimensões da pedra são pequenas, orienta-se que: despreze a força de atrito sobre a pedra e considere um movimento em queda livre.</label><br>
+          <p>Determine o intervalo de tempo, em segundos, entre o abandono da pedra e a chegada, na beira do poço, da frente de onda sonora produzida pela pedra tocando o fundo do poço. </p>
+          <p>Dados: a velocidade do som é constante e igual a 320 m/s e a aceleração da gravidade, no local, é de 10 \(m/s^2\).</p>  
+          <input type="radio" name="q38" value="A"> A) 10 <br>
+          <input type="radio" name="q38" value="B"> B) 9 <br>
+          <input type="radio" name="q38" value="C"> C) 8 <br>
+          <input type="radio" name="q38" value="D"> D) 1 <br><br>
+  
+          <label>39. Uma bola é lançada para cima em uma direção que forma 60° com a horizontal. Sabe-se que a velocidade da bola ao alcançar a altura máxima é de 20 m/s. Pode-se afirmar, então, que a velocidade de lançamento da bola tem módulo:</label><br>
+          <input type="radio" name="q39" value="A"> A) 10 <br>
+          <input type="radio" name="q39" value="B"> B) 20 <br>
+          <input type="radio" name="q39" value="C"> C) 40 <br>
+          <input type="radio" name="q39" value="D"> D) 23 <br><br>
+  
+          <label>40. Um corpo é abandonado do topo de um precipício. O ruído produzido pela queda do corpo ao atingir o chão é ouvido 10 s após o seu abandono. Considerando a velocidade do som no ar igual a 340 m/s, pode-se afirmar que a altura do precipício, em metros, é aproximadamente:</label><br>
+          <input type="radio" name="q40" value="A"> A) 200 <br>
+          <input type="radio" name="q40" value="B"> B) 288 <br>
+          <input type="radio" name="q40" value="C"> C) 391 <br>
+          <input type="radio" name="q40" value="D"> D) 423 <br><br>
+  
+          <label>41. Uma partícula é lançada obliquamente a partir do solo e descreve o movimento representado no gráfico que relaciona a altura (y), em relação ao solo, em função da posição horizontal (x). Durante todo movimento, sobre a partícula, atua somente a gravidade cujo módulo no local é constante e igual a 10m/s². O tempo, em segundos, que a partícula atinge a altura máxima é</label><br>
+          <input type="radio" name="q41" value="A"> A) 1 <br>
+          <input type="radio" name="q41" value="B"> B) 2 <br>
+          <input type="radio" name="q41" value="C"> C) 3 <br>
+          <input type="radio" name="q41" value="D"> D) 4 <br><br>
+  
+          <label>42. Sabendo que a = 6 N e b = 4 N, o módulo do vetor soma dos vetores \( \vec{a} \) e \( \vec{b} \) que formam um ângulo de 60° entre si e atuam sobre um ponto material, vale:</label><br>
+          <p>Dados: considere sen 60° = 0,87 e cos 60° = 0,50</p>
+          <input type="radio" name="q42" value="A"> A) \( 2 \sqrt{11}  \) <br>
+          <input type="radio" name="q42" value="B"> B) \( 2 \sqrt{13}  \) <br>
+          <input type="radio" name="q42" value="C"> C) \( 2 \sqrt{17}  \) <br>
+          <input type="radio" name="q42" value="D"> D) \( 2 \sqrt{19}  \) <br><br>
+  
+          <label>43. Uma mosca pousa sobre um disco que gira num plano horizontal, em movimento circular uniforme, executando 60 rotações por minuto. Se a distância entre a mosca e o centro do disco é de 10 cm, a aceleração centrípeta, em \( {\pi}^2 cm/s^2\), a qual a mosca está sujeita sobre o disco, é de:</label><br>
+          <input type="radio" name="q43" value="A"> A) 20 <br>
+          <input type="radio" name="q43" value="B"> B) 40 <br>
+          <input type="radio" name="q43" value="C"> C) 60 <br>
+          <input type="radio" name="q43" value="D"> D) 120 <br><br>
+  
+          <label>44. Pilotos de aviões-caça da Segunda Grande Guerra atingiam até a velocidade de 756 km/h em mergulho. A essa velocidade podiam realizar uma manobra em curva com um raio aproximado, em m, de: </label><br>
+          <p>OBS: a aceleração máxima que um ser humano suporta sem desmaiar é de 70 \(m/s^2\).</p>
+          <input type="radio" name="q44" value="A"> A) 30 <br>
+          <input type="radio" name="q44" value="B"> B) 130 <br>
+          <input type="radio" name="q44" value="C"> C) 330 <br>
+          <input type="radio" name="q44" value="D"> D) 630 <br><br>
+  
+          <label>45. O movimento de rotação de uma polia de raio igual a 20 cm é transmitido a outra de raio 5 cm por meio de uma correia que não desliza, conforme o desenho. Como a polia maior gira com uma frequência igual a 400 rotações por minuto (rpm), a frequência, em rpm, da polia menor é: </label><br>
+          <input type="radio" name="q45" value="A"> A) 1600 <br>
+          <input type="radio" name="q45" value="B"> B) 400 <br>
+          <input type="radio" name="q45" value="C"> C) 100 <br>
+          <input type="radio" name="q45" value="D"> D) 25 <br><br>
+  
+          <label>46. Duas polias estão acopladas por uma correia que não desliza. Sabendo-se que o raio da polia menor é de 20 cm e sua frequência de rotação f1 é de 3600 rpm, qual é a frequência de rotação f2 da polia maior, em rpm, cujo raio vale 50 cm?</label><br>
+          <input type="radio" name="q46" value="A"> A) 9000 <br>
+          <input type="radio" name="q46" value="B"> B) 7200 <br>
+          <input type="radio" name="q46" value="C"> C) 1440 <br>
+          <input type="radio" name="q46" value="D"> D) 720 <br><br>
+  
+          <label>47. Observe os pontos A e B marcados nas pás de um ventilador que gira com frequência constante, conforme a figura abaixo.</label><br>
+          <img src="qqq5.png" alt="" width="300px"><br><br>
+          <p>É INCORRETO afirmar que em A</p>
+          <input type="radio" name="q47" value="A"> A) a velocidade escalar é maior que em B. <br>
+          <input type="radio" name="q47" value="B"> B) a aceleração é menor que em B. <br>
+          <input type="radio" name="q47" value="C"> C) a velocidade angular é a mesma que em B. <br>
+          <input type="radio" name="q47" value="D"> D) o período é o mesmo que em B. <br><br>
+          
+          <label>48. Duas crianças resolvem apostar corrida em uma praça cuja geometria é representada na figura abaixo</label><br>
+          <img src="qqq6.png" alt="" width="300px"><br><br>
+          <p>Sabendo que a criança I percorre o caminho ABC e que a criança II percorre o caminho AC, podemos afirmar que a diferença entre a distância percorrida pela criança I e a criança II, vale, em metros:</p>
+          <input type="radio" name="q48" value="A"> A) 20 <br>
+          <input type="radio" name="q48" value="B"> B) 30 <br>
+          <input type="radio" name="q48" value="C"> C) 40 <br>
+          <input type="radio" name="q48" value="D"> D) 50 <br><br>
+  
+          <button type="submit">Enviar Respostas</button>
+      </form>
+  
+      <script>
+        document.getElementById("simuladoForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+  
+        const nome = document.getElementById("nome").value;
+  
+        // Captura as respostas das questões
+        const respostas = {};
+        for (let i = 1; i <= 48; i++) {
+          const resposta = document.querySelector('input[name="q' + i + '"]:checked')?.value || '';
+          respostas['q' + i] = resposta;
+        }
+  
+  //////////////////////////////////////////////////////////////////////////////////////
+  <script>
+      const form = document.getElementById('quizForm');
+      const submitButton = document.getElementById('submitButton');
+      const resultDiv = document.getElementById('result');
+      const timerDiv = document.getElementById('timer');
+      const chartCanvas = document.getElementById('chart');
+  
+      const correctAnswers = {
+        q1: 'A', // Resposta correta da questão 1
+        q2: 'E', // Resposta correta da questão 2
+      };
+  
+      const stats = {
+        q1: { correct: 0, total: 0 },
+        q2: { correct: 0, total: 0 },
+      };
+  
+      const timeLimit = 2 * 60 * 60; // 2 horas em segundos
+      let remainingTime = timeLimit;
+  
+      const timerInterval = setInterval(() => {
+        if (remainingTime <= 0) {
+          clearInterval(timerInterval);
+          timerDiv.textContent = "Tempo esgotado!";
+          autoSubmit();
+          return;
+        }
+        remainingTime--;
+        const hours = Math.floor(remainingTime / 3600);
+        const minutes = Math.floor((remainingTime % 3600) / 60);
+        const seconds = remainingTime % 60;
+        timerDiv.textContent = `Tempo restante: ${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      }, 1000);
+  
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        processAnswers();
+      });
+  
+      function autoSubmit() {
+        processAnswers();
+      }
+  
+      function processAnswers() {
+        const formData = new FormData(form);
+        const studentName = formData.get('studentName');
+        if (!studentName) {
+          alert("Por favor, insira seu nome.");
+          return;
+        }
+  
+        let score = 0;
+  
+        for (const [question, answer] of formData.entries()) {
+          if (question === 'studentName') continue;
+  
+          stats[question].total++;
+          if (correctAnswers[question] === answer) {
+            score++;
+            stats[question].correct++;
+          }
+        }
+  
+        resultDiv.textContent = `${studentName}, você acertou ${score} de ${Object.keys(correctAnswers).length} perguntas!`;
+        renderChart();
+        submitButton.disabled = true;
+        form.querySelectorAll('input').forEach(input => input.disabled = true);
+      }
+  
+      function renderChart() {
+        const ctx = chartCanvas.getContext('2d');
+        const labels = Object.keys(stats);
+        const correctData = labels.map(key => stats[key].correct);
+        const totalData = labels.map(key => stats[key].total);
+  
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [
+              {
+                label: 'Acertos',
+                data: correctData,
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+              },
+              {
+                label: 'Tentativas',
+                data: totalData,
+                backgroundColor: 'rgba(192, 75, 75, 0.6)',
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: { beginAtZero: true },
+            },
+          },
+        });
+      }
+    </script>          
+  
+    <script>
+      document.getElementById("simuladoForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const nome = document.getElementById("nome").value;
+
+      // Captura as respostas das questões
+      const respostas = {};
+      for (let i = 1; i <= 48; i++) {
+        const resposta = document.querySelector('input[name="q' + i + '"]:checked')?.value || '';
+        respostas['q' + i] = resposta;
+      }
+
+      // Envia as respostas para o Google Apps Script
+      // https://cors-anywhere.herokuapp.com/        
+      const url = 'https://script.google.com/macros/s/AKfycbxzNbd3OcFTVKbU4za_cPBmh73D45XLknG2G014ZDh5YWWwdAZ-jXN80LHHiY0_BvRzeA/exec'; // Substitua pela sua URL do Google Apps Script
+
+      const params = new URLSearchParams();
+      params.append('nome', nome);
+
+      // Adiciona as respostas no formato correto
+      for (let i = 1; i <= 48; i++) {
+        params.append('q' + i, respostas['q' + i]);
+      }
+
+      const response = await fetch(url, {
+        method: 'POST',
+        body: params
+      });
+
+      alert("Respostas enviadas com sucesso!");
+      });
+    </script>
+  </body>
+  </html>
